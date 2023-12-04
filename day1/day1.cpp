@@ -1,3 +1,4 @@
+#include "../common/load_input.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -21,29 +22,9 @@ static std::string take_digits(const std::string &str)
     return result;
 }
 
-static std::vector<std::string> load_input_or_default(const std::filesystem::path &path)
-{
-    if (std::filesystem::exists(path))
-    {
-        std::vector<std::string> lines;
-        std::string line;
-        std::ifstream in_stream;
-
-        in_stream.open(path.string().c_str());
-
-        while (in_stream >> line)
-        {
-            lines.emplace_back(line);
-        }
-
-        return lines;
-    }
-    return {};
-}
-
 static std::tuple<std::size_t, std::string, std::string> find_first_to_replace(const std::string &source)
 {
-    static std::vector<std::pair<std::string, std::string>> convertion = {
+    static std::vector<std::pair<std::string, std::string>> conversion = {
 
         {"one", "o1e"},
         {"two", "t2o"},
@@ -60,9 +41,9 @@ static std::tuple<std::size_t, std::string, std::string> find_first_to_replace(c
     std::size_t nearest = std::string::npos;
     std::size_t first_to_replace = std::string::npos;
 
-    for (std::size_t i = 0, len = convertion.size(); i < len; i++)
+    for (std::size_t i = 0, len = conversion.size(); i < len; i++)
     {
-        std::tie(first, second) = convertion.at(i);
+        std::tie(first, second) = conversion.at(i);
         std::size_t pos = source.find(first);
 
         if (pos == source.npos)
@@ -80,8 +61,8 @@ static std::tuple<std::size_t, std::string, std::string> find_first_to_replace(c
 
     if (nearest != source.npos)
     {
-        first = convertion.at(first_to_replace).first;
-        second = convertion.at(first_to_replace).second;
+        first = conversion.at(first_to_replace).first;
+        second = conversion.at(first_to_replace).second;
     }
 
     return std::make_tuple(nearest, first, second);
