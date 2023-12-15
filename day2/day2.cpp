@@ -1,7 +1,6 @@
 #include "../common/load_input.h"
 
 #include <iostream>
-#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -9,57 +8,58 @@
 #include <vector>
 
 static int MaxRedCubes = 12;
-static int MaxBlueCubes = 14;
 static int MaxGreenCubes = 13;
+static int MaxBlueCubes = 14;
 
-struct Game {
-    int red_count;
-    int blue_count;
-    int green_count;
-};
-
-static std::vector<std::string> split(const std::string & sep, const std::string & str)
+static bool is_it_possible(const std::string &payload)
 {
-    std::vector<std::string> parts;
-    std::string source{str};
-    std::size_t pos{0};
-
-    while ((pos = source.find(sep)) != std::string::npos)
+    for (auto &cube : split(",", payload))
     {
-        parts.push_back(source.substr(0, pos));
-        source.erase(0, pos + sep.length());
+        auto s = strip(cube);
+        auto amount_colour = split(" ", s);
+        auto colour = amount_colour.at(1);
+        int count = std::atoi(amount_colour.at(0).c_str());
+
+        if ((colour == "blue" && count > MaxBlueCubes) || (colour == "red" && count > MaxRedCubes) || (colour == "green" && count > MaxGreenCubes))
+        {
+            return false;
+        }
     }
 
-      for (const auto &str : parts) {
-        std::cout << str << std::endl;
-      }
-
-    return parts;
+    return true;
 }
 
 namespace day2
 {
-    std::string part1(const std::vector<std::string> & input)
+    int part1(const std::vector<std::string> &input)
     {
-        for (const auto & str : input)
-        {
-            std::string game_name;
-            std::string payload;
+        int total{0};
 
+        for (const auto &str : input)
+        {
             auto game_and_payload = split(":", str);
-            std::cout << game_and_payload.at(0) << "\n";
-            // auto splited = split(";", parts.at(1));
+            auto game_name = game_and_payload.at(0);
+            bool should_continue{true};
+
+            for (auto playload : split(";", game_and_payload.at(1)))
+            {
+                should_continue &= is_it_possible(playload);
+            }
+
+            if (should_continue == true)
+            {
+                auto game_name_and_id = split(" ", game_name);
+                total += std::atoi(game_name_and_id.at(1).c_str());
+            }
         }
 
-        return {};
+        return total;
     }
 }
-
 
 int main(int argc, char **argv)
 {
     std::filesystem::path file_input;
-
     if (argc == 1)
     {
         std::cerr << "Il manque un fichier en argument\n";
@@ -71,7 +71,9 @@ int main(int argc, char **argv)
         file_input = std::filesystem::path{argv[1]};
         std::vector<std::string> input = load_input_or_default(file_input);
 
-        std::cout << "Day 2 : Part 1: \n" << day2::part1(input) << std::endl;
+        const auto result1 = day2::part1(input);
+        std::cout << "Day 2 : Part 1: "
+                  << result1 << std::endl;
     }
 
     return 0;
