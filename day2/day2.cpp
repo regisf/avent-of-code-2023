@@ -1,4 +1,5 @@
 #include "../common/load_input.h"
+#include "../common/string_utils.h"
 
 #include <iostream>
 #include <filesystem>
@@ -55,6 +56,14 @@ namespace day2
 
         return total;
     }
+
+    int part2(const std::vector<std::string> & input)
+    {
+        int total{0};
+
+
+        return total;
+    }
 }
 
 int main(int argc, char **argv)
@@ -71,9 +80,11 @@ int main(int argc, char **argv)
         file_input = std::filesystem::path{argv[1]};
         std::vector<std::string> input = load_input_or_default(file_input);
 
-        const auto result1 = day2::part1(input);
-        std::cout << "Day 2 : Part 1: "
-                  << result1 << std::endl;
+        int result1 = day2::part1(input);
+        std::cout << "Day 2 : Part 1: " << result1 << std::endl;
+
+        int result2 = day2::part2(input);
+        std::cout << "Day 2 : Part 2: " << result2 << std::endl;
     }
 
     return 0;
